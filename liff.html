@@ -8,54 +8,35 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --navy: #102030;
-      --teal: #4090a0;
-      --sky:  #a0d0d0;
-      --gold: #e0d030;
-      --sky-light:  #d6eef2;
-      --gold-light: #faf7d0;
+      --navy: #102030; --teal: #4090a0; --sky: #a0d0d0; --gold: #e0d030;
+      --sky-light: #d6eef2; --gold-light: #faf7d0;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans TC', 'PingFang TC', sans-serif;
       background: linear-gradient(160deg, var(--sky-light) 0%, #eaf8f6 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px;
     }
     .card {
-      background: #fff;
-      border-radius: 26px;
-      width: 100%;
-      max-width: 360px;
-      box-shadow: 0 6px 32px rgba(16,32,48,0.14);
-      overflow: hidden;
-      text-align: center;
+      background: #fff; border-radius: 26px; width: 100%; max-width: 360px;
+      box-shadow: 0 6px 32px rgba(16,32,48,0.14); overflow: hidden; text-align: center;
     }
     .header-band {
       background: linear-gradient(135deg, var(--teal) 0%, var(--sky) 100%);
-      padding: 26px 22px 22px;
-      position: relative;
+      padding: 26px 22px 22px; position: relative;
     }
     .header-band::after {
-      content: '';
-      position: absolute;
-      bottom: -1px; left: 0; right: 0;
-      height: 20px;
-      background: #fff;
-      border-radius: 26px 26px 0 0;
+      content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+      height: 20px; background: #fff; border-radius: 26px 26px 0 0;
     }
     .logo-area { font-size: 42px; line-height: 1; }
-    .title     { font-size: 17px; font-weight: 700; color: #fff; margin-top: 7px;
-                 text-shadow: 0 1px 4px rgba(16,32,48,0.25); }
-    .subtitle  { font-size: 11px; color: var(--gold); letter-spacing: 2px;
-                 font-weight: 600; margin-top: 2px; }
+    .title    { font-size: 17px; font-weight: 700; color: #fff; margin-top: 7px;
+                text-shadow: 0 1px 4px rgba(16,32,48,0.25); }
+    .subtitle { font-size: 11px; color: #fff; letter-spacing: 2px; /* 白色 */
+                font-weight: 600; margin-top: 2px; opacity: 0.85; }
     .body-area { padding: 4px 22px 0; }
     .clock {
       font-size: 46px; font-weight: 700; color: var(--navy);
-      letter-spacing: 3px; font-variant-numeric: tabular-nums;
-      margin: 20px 0 4px;
+      letter-spacing: 3px; font-variant-numeric: tabular-nums; margin: 20px 0 4px;
     }
     .date-label { font-size: 13px; color: var(--teal); margin-bottom: 18px; }
     .info-box {
@@ -70,10 +51,7 @@
     .info-row:last-child { border-bottom: none; }
     .info-label { color: var(--teal); font-size: 13px; }
     .info-val   { color: var(--navy); font-weight: 600; }
-    .dot {
-      display: inline-block; width: 9px; height: 9px;
-      border-radius: 50%; margin-right: 5px; vertical-align: middle;
-    }
+    .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
     .dot-ok      { background: #4caf50; }
     .dot-err     { background: #e53935; }
     .dot-loading { background: var(--gold); animation: blink 1s ease-in-out infinite; }
@@ -89,8 +67,7 @@
     .btn-out { background: var(--teal); color: #fff; border: 2px solid var(--sky); }
     .result-box {
       border-radius: 14px; padding: 14px 16px; font-size: 14px;
-      line-height: 1.9; white-space: pre-line; text-align: left;
-      display: none; margin-bottom: 2px;
+      line-height: 1.9; white-space: pre-line; text-align: left; display: none; margin-bottom: 2px;
     }
     .result-ok   { background: #eaf7f9; color: var(--navy); border: 1.5px solid var(--sky); }
     .result-warn { background: var(--gold-light); color: #5a4800; border: 1.5px solid var(--gold); }
@@ -127,6 +104,10 @@
         <span class="info-label">今日班別</span>
         <span class="info-val" id="shiftLabel">--</span>
       </div>
+      <div class="info-row">
+        <span class="info-label">上班地點</span>
+        <span class="info-val" id="branchLabel">--</span>
+      </div>
     </div>
     <div class="btn-group">
       <button class="btn btn-in"  id="btnIn"  onclick="punch('in')"  disabled>⬆️ 上班打卡</button>
@@ -139,11 +120,11 @@
 </div>
 
 <script>
-  // ══ 設定 ══
   var LIFF_ID = '2010157532-PcIa0Q66';
   var GAS_URL = 'https://script.google.com/macros/s/AKfycbw8s331q6BWMHpObbLTOriJqYAEEeIngIrBq28uFLxCuBHs-ssWR7hjzAryyk6uZiaG/exec';
 
-  var userProfile = null;
+  var userUID     = null; // LINE UID
+  var empName     = null; // 員工主檔姓名
   var gpsCoords   = null;
   var DAY_NAMES   = ['日','一','二','三','四','五','六'];
 
@@ -165,7 +146,6 @@
     var script = document.createElement('script');
     params.callback = cbName;
     script.src = GAS_URL + '?' + new URLSearchParams(params).toString();
-
     window[cbName] = function(data) {
       delete window[cbName];
       if (script.parentNode) document.body.removeChild(script);
@@ -192,8 +172,27 @@
       document.getElementById('empName').textContent = '初始化中...';
       await liff.init({ liffId: LIFF_ID });
       if (!liff.isLoggedIn()) { liff.login(); return; }
-      userProfile = await liff.getProfile();
-      document.getElementById('empName').textContent = userProfile.displayName;
+
+      var profile = await liff.getProfile();
+      userUID = profile.userId;
+
+      // 向 GAS 查詢員工資料（姓名、班別、院區）
+      callGAS({ action: 'getInfo', uid: userUID },
+        function(result) {
+          if (result.success) {
+            empName = result.name;
+            document.getElementById('empName').textContent   = result.name;
+            document.getElementById('shiftLabel').textContent = result.shift || '未排班';
+            document.getElementById('branchLabel').textContent = result.branch ? result.branch + '院區' : '--';
+          } else {
+            document.getElementById('empName').textContent = '查無資料，請聯絡管理員';
+          }
+        },
+        function() {
+          document.getElementById('empName').textContent = '查詢失敗，請重整';
+        }
+      );
+
       requestGPS();
     } catch (err) {
       document.getElementById('empName').textContent = '錯誤:' + err.message;
@@ -221,7 +220,7 @@
 
   // ── 打卡 ──
   function punch(type) {
-    if (!gpsCoords || !userProfile) {
+    if (!gpsCoords || !userUID) {
       showResult('GPS 或身份未就緒\n請稍後再試', 'err');
       return;
     }
@@ -231,7 +230,7 @@
 
     callGAS({
       action:    'punch',
-      uid:       userProfile.userId,
+      uid:       userUID,
       lat:       gpsCoords.lat,
       lng:       gpsCoords.lng,
       punchType: type,
@@ -256,11 +255,8 @@
 
   function showResult(msg, type) {
     var el = document.getElementById('resultBox');
-    el.textContent   = msg;
-    el.className     = 'result-box result-' + type;
-    el.style.display = 'block';
+    el.textContent = msg; el.className = 'result-box result-' + type; el.style.display = 'block';
   }
-
   function setButtons(on) {
     document.getElementById('btnIn').disabled  = !on;
     document.getElementById('btnOut').disabled = !on;
