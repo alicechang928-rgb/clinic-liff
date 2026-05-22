@@ -208,8 +208,8 @@
       requestGPS();
 
     } catch (err) {
-      document.getElementById('empName').textContent = '錯誤:' + err.message;
-    }
+  showResult('連線失敗\n錯誤：' + err.name + '\n' + err.message, 'err');
+}
   }
 
   // ── GPS 定位 ──
