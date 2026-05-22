@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>好幸福診所 打卡系統</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #102030;
+      --teal: #4090a0;
+      --sky:  #a0d0d0;
+      --gold: #e0d030;
+      --sky-light:  #d6eef2;
+      --gold-light: #faf7d0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans TC', 'PingFang TC', sans-serif;
+      background: linear-gradient(160deg, var(--sky-light) 0%, #eaf8f6 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 26px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 6px 32px rgba(16,32,48,0.14);
+      overflow: hidden;
+      text-align: center;
+    }
+    .header-band {
+      background: linear-gradient(135deg, var(--teal) 0%, var(--sky) 100%);
+      padding: 26px 22px 22px;
+      position: relative;
+    }
+    .header-band::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 0; right: 0;
+      height: 20px;
+      background: #fff;
+      border-radius: 26px 26px 0 0;
+    }
+    .logo-area  { font-size: 42px; line-height: 1; }
+    .title      { font-size: 19px; font-weight: 700; color: #fff; margin-top: 7px;
+                  text-shadow: 0 1px 4px rgba(16,32,48,0.25); }
+    .subtitle   { font-size: 11px; color: var(--gold); letter-spacing: 2px;
+                  font-weight: 600; margin-top: 2px; }
+    .body-area  { padding: 4px 22px 0; }
+    .clock {
+      font-size: 46px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 3px;
+      font-variant-numeric: tabular-nums;
+      margin: 20px 0 4px;
+    }
+    .date-label { font-size: 13px; color: var(--teal); margin-bottom: 18px; }
+    .info-box {
+      background: linear-gradient(135deg, #f4fbfc 0%, #eef8f5 100%);
+      border-radius: 14px;
+      border: 1.5px solid var(--sky);
+      padding: 10px 16px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--sky-light);
+      font-size: 14px;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: var(--teal); font-size: 13px; }
+    .info-val   { color: var(--navy); font-weight: 600; }
+    .dot {
+      display: inline-block;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    .dot-ok      { background: #4caf50; }
+    .dot-err     { background: #e53935; }
+    .dot-loading { background: var(--gold); animation: blink 1s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+    .btn-group { display: flex; gap: 12px; margin-bottom: 18px; }
+    .btn {
+      flex: 1;
+      padding: 17px 6px;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: transform 0.12s;
+      line-height: 1.5;
+    }
+    .btn:active:not(:disabled) { transform: scale(0.94); }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-in  {
+      background: var(--sky-light);
+      color: var(--navy);
+      border: 2px solid var(--teal);
+    }
+    .btn-out {
+      background: var(--teal);
+      color: #fff;
+      border: 2px solid var(--sky);
+    }
+    .result-box {
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 14px;
+      line-height: 1.9;
+      white-space: pre-line;
+      text-align: left;
+      display: none;
+      margin-bottom: 2px;
+    }
+    .result-ok   { background: linear-gradient(135deg,#eaf7f9,#f0fbf7); color: var(--navy); border: 1.5px solid var(--sky); }
+    .result-warn { background: var(--gold-light); color: #5a4800; border: 1.5px solid var(--gold); }
+    .result-err  { background: #fce8ec; color: #8b1a28; border: 1.5px solid #f4a0b0; }
+    .footer-bar {
+      height: 5px;
+      background: linear-gradient(90deg, var(--navy) 0%, var(--teal) 35%, var(--sky) 65%, var(--gold) 100%);
+      margin-top: 20px;
+    }
+    .spinner { font-size: 13px; color: var(--teal); min-height: 20px; margin-top: 4px; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="header-band">
+    <div class="logo-area">🏥</div>
+    <div class="title">好幸福診所</div>
+    <div class="subtitle">員工打卡系統</div>
+  </div>
+  <div class="body-area">
+    <div class="clock"      id="clock">--:--:--</div>
+    <div class="date-label" id="dateLabel">載入中...</div>
+    <div class="info-box">
+      <div class="info-row">
+        <span class="info-label">員工姓名</span>
+        <span class="info-val" id="empName">識別中...</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">GPS 狀態</span>
+        <span class="info-val" id="gpsStatus">
+          <span class="dot dot-loading"></span>定位中...
+        </span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">今日班別</span>
+        <span class="info-val" id="shiftLabel">--</span>
+      </div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-in"  id="btnIn"  onclick="punch('in')"  disabled>⬆️ 上班打卡</button>
+      <button class="btn btn-out" id="btnOut" onclick="punch('out')" disabled>⬇️ 下班打卡</button>
+    </div>
+    <div class="result-box" id="resultBox"></div>
+    <div class="spinner"    id="spinner"></div>
+  </div>
+  <div class="footer-bar"></div>
+</div>
+
+<script>
+  // ══ 設定區（GitHub Pages 版本，直接寫死）══
+  var LIFF_ID = '2010157532-PcIa0Q66';
+  var GAS_URL = 'https://script.google.com/macros/s/AKfycbiSxQimzBwKXRpluknx-IIbvr-ufkRlXgQcrs1ywmYtiUvZxgeDR-wp-lYRdtUcqpE/exec';
+
+  var userProfile = null;
+  var gpsCoords   = null;
+  var DAY_NAMES   = ['日','一','二','三','四','五','六'];
+
+  // ── 時鐘 ──
+  function updateClock() {
+    var now = new Date();
+    document.getElementById('clock').textContent = now.toTimeString().slice(0, 8);
+    document.getElementById('dateLabel').textContent =
+      now.getFullYear() + '/' + pad(now.getMonth()+1) + '/' + pad(now.getDate()) +
+      '（週' + DAY_NAMES[now.getDay()] + '）';
+  }
+  function pad(n) { return String(n).padStart(2,'0'); }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // ── LIFF 初始化 ──
+  async function init() {
+    try {
+      document.getElementById('empName').textContent = '初始化中...';
+      await liff.init({ liffId: LIFF_ID });
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+
+      userProfile = await liff.getProfile();
+      document.getElementById('empName').textContent = userProfile.displayName;
+      requestGPS();
+
+    } catch (err) {
+      document.getElementById('empName').textContent = '錯誤:' + err.message;
+    }
+  }
+
+  // ── GPS 定位 ──
+  function requestGPS() {
+    if (!navigator.geolocation) { setGPS(false, 'GPS 不支援'); return; }
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        gpsCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setGPS(true, '已定位（±' + Math.round(pos.coords.accuracy) + 'm）');
+        setButtons(true);
+      },
+      function() { setGPS(false, '定位失敗，請重整頁面'); },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  }
+
+  function setGPS(ok, msg) {
+    document.getElementById('gpsStatus').innerHTML =
+      '<span class="dot ' + (ok ? 'dot-ok' : 'dot-err') + '"></span>' + msg;
+  }
+
+  // ── 打卡 ──
+  async function punch(type) {
+    if (!gpsCoords || !userProfile) {
+      showResult('GPS 或身份未就緒\n請稍後再試', 'err');
+      return;
+    }
+    setButtons(false);
+    document.getElementById('spinner').textContent = '打卡中，請稍候...';
+    document.getElementById('resultBox').style.display = 'none';
+
+    try {
+      var resp = await fetch(GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid:       userProfile.userId,
+          lat:       gpsCoords.lat,
+          lng:       gpsCoords.lng,
+          punchType: type,
+          timestamp: new Date().toISOString(),
+        }),
+        redirect: 'follow',
+      });
+      var result = await resp.json();
+      if (result.success) {
+        var cls = result.status === '正常' ? 'ok' : result.status === '範圍外' ? 'err' : 'warn';
+        showResult(result.message, cls);
+      } else {
+        showResult(result.message, 'err');
+      }
+    } catch (err) {
+      showResult('連線失敗，請重試\n' + err.message, 'err');
+    } finally {
+      document.getElementById('spinner').textContent = '';
+      setButtons(true);
+    }
+  }
+
+  function showResult(msg, type) {
+    var el = document.getElementById('resultBox');
+    el.textContent   = msg;
+    el.className     = 'result-box result-' + type;
+    el.style.display = 'block';
+  }
+
+  function setButtons(on) {
+    document.getElementById('btnIn').disabled  = !on;
+    document.getElementById('btnOut').disabled = !on;
+  }
+
+  init();
+</script>
+</body>
+</html>
