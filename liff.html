@@ -195,6 +195,7 @@
   // ── LIFF 初始化 ──
   async function init() {
     try {
+      // GET 請求避免 CORS 問題
       document.getElementById('empName').textContent = '初始化中...';
       await liff.init({ liffId: LIFF_ID });
 
@@ -242,16 +243,18 @@
     document.getElementById('resultBox').style.display = 'none';
 
     try {
-      var resp = await fetch(GAS_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-          uid:       userProfile.userId,
-          lat:       gpsCoords.lat,
-          lng:       gpsCoords.lng,
-          punchType: type,
-          timestamp: new Date().toISOString(),
-        }),
+      // GET 請求避免 CORS 問題
+      // GET 請求，避免跨網域 CORS 問題
+      var params = new URLSearchParams({
+        action:    'punch',
+        uid:       userProfile.userId,
+        lat:       gpsCoords.lat,
+        lng:       gpsCoords.lng,
+        punchType: type,
+        timestamp: new Date().toISOString(),
+      });
+      var resp = await fetch(GAS_URL + '?' + params.toString(), {
+        method:   'GET',
         redirect: 'follow',
       });
       var result = await resp.json();
