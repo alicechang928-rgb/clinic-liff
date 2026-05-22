@@ -46,46 +46,33 @@
       background: #fff;
       border-radius: 26px 26px 0 0;
     }
-    .logo-area  { font-size: 42px; line-height: 1; }
-    .title      { font-size: 19px; font-weight: 700; color: #fff; margin-top: 7px;
-                  text-shadow: 0 1px 4px rgba(16,32,48,0.25); }
-    .subtitle   { font-size: 11px; color: var(--gold); letter-spacing: 2px;
-                  font-weight: 600; margin-top: 2px; }
-    .body-area  { padding: 4px 22px 0; }
+    .logo-area { font-size: 42px; line-height: 1; }
+    .title     { font-size: 17px; font-weight: 700; color: #fff; margin-top: 7px;
+                 text-shadow: 0 1px 4px rgba(16,32,48,0.25); }
+    .subtitle  { font-size: 11px; color: var(--gold); letter-spacing: 2px;
+                 font-weight: 600; margin-top: 2px; }
+    .body-area { padding: 4px 22px 0; }
     .clock {
-      font-size: 46px;
-      font-weight: 700;
-      color: var(--navy);
-      letter-spacing: 3px;
-      font-variant-numeric: tabular-nums;
+      font-size: 46px; font-weight: 700; color: var(--navy);
+      letter-spacing: 3px; font-variant-numeric: tabular-nums;
       margin: 20px 0 4px;
     }
     .date-label { font-size: 13px; color: var(--teal); margin-bottom: 18px; }
     .info-box {
       background: linear-gradient(135deg, #f4fbfc 0%, #eef8f5 100%);
-      border-radius: 14px;
-      border: 1.5px solid var(--sky);
-      padding: 10px 16px;
-      margin-bottom: 20px;
-      text-align: left;
+      border-radius: 14px; border: 1.5px solid var(--sky);
+      padding: 10px 16px; margin-bottom: 20px; text-align: left;
     }
     .info-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0;
-      border-bottom: 1px solid var(--sky-light);
-      font-size: 14px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 0; border-bottom: 1px solid var(--sky-light); font-size: 14px;
     }
     .info-row:last-child { border-bottom: none; }
     .info-label { color: var(--teal); font-size: 13px; }
     .info-val   { color: var(--navy); font-weight: 600; }
     .dot {
-      display: inline-block;
-      width: 9px; height: 9px;
-      border-radius: 50%;
-      margin-right: 5px;
-      vertical-align: middle;
+      display: inline-block; width: 9px; height: 9px;
+      border-radius: 50%; margin-right: 5px; vertical-align: middle;
     }
     .dot-ok      { background: #4caf50; }
     .dot-err     { background: #e53935; }
@@ -93,44 +80,24 @@
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
     .btn-group { display: flex; gap: 12px; margin-bottom: 18px; }
     .btn {
-      flex: 1;
-      padding: 17px 6px;
-      font-size: 15px;
-      font-weight: 700;
-      border-radius: 16px;
-      cursor: pointer;
-      transition: transform 0.12s;
-      line-height: 1.5;
+      flex: 1; padding: 17px 6px; font-size: 15px; font-weight: 700;
+      border-radius: 16px; cursor: pointer; transition: transform 0.12s; line-height: 1.5;
     }
     .btn:active:not(:disabled) { transform: scale(0.94); }
     .btn:disabled { opacity: 0.35; cursor: not-allowed; }
-    .btn-in  {
-      background: var(--sky-light);
-      color: var(--navy);
-      border: 2px solid var(--teal);
-    }
-    .btn-out {
-      background: var(--teal);
-      color: #fff;
-      border: 2px solid var(--sky);
-    }
+    .btn-in  { background: var(--sky-light); color: var(--navy); border: 2px solid var(--teal); }
+    .btn-out { background: var(--teal); color: #fff; border: 2px solid var(--sky); }
     .result-box {
-      border-radius: 14px;
-      padding: 14px 16px;
-      font-size: 14px;
-      line-height: 1.9;
-      white-space: pre-line;
-      text-align: left;
-      display: none;
-      margin-bottom: 2px;
+      border-radius: 14px; padding: 14px 16px; font-size: 14px;
+      line-height: 1.9; white-space: pre-line; text-align: left;
+      display: none; margin-bottom: 2px;
     }
-    .result-ok   { background: linear-gradient(135deg,#eaf7f9,#f0fbf7); color: var(--navy); border: 1.5px solid var(--sky); }
+    .result-ok   { background: #eaf7f9; color: var(--navy); border: 1.5px solid var(--sky); }
     .result-warn { background: var(--gold-light); color: #5a4800; border: 1.5px solid var(--gold); }
     .result-err  { background: #fce8ec; color: #8b1a28; border: 1.5px solid #f4a0b0; }
     .footer-bar {
-      height: 5px;
+      height: 5px; margin-top: 20px;
       background: linear-gradient(90deg, var(--navy) 0%, var(--teal) 35%, var(--sky) 65%, var(--gold) 100%);
-      margin-top: 20px;
     }
     .spinner { font-size: 13px; color: var(--teal); min-height: 20px; margin-top: 4px; }
   </style>
@@ -172,8 +139,8 @@
 </div>
 
 <script>
-  // ══ 設定區（GitHub Pages 版本，直接寫死）══
-  var LIFF_ID = '2010157532-PcIa0Q66'; // LIFF ID
+  // ══ 設定 ══
+  var LIFF_ID = '2010157532-PcIa0Q66';
   var GAS_URL = 'https://script.google.com/macros/s/AKfycbw8s331q6BWMHpObbLTOriJqYAEEeIngIrBq28uFLxCuBHs-ssWR7hjzAryyk6uZiaG/exec';
 
   var userProfile = null;
@@ -188,16 +155,14 @@
       now.getFullYear() + '/' + pad(now.getMonth()+1) + '/' + pad(now.getDate()) +
       '（週' + DAY_NAMES[now.getDay()] + '）';
   }
-  function pad(n) { return String(n).padStart(2,'0'); }
+  function pad(n) { return String(n).padStart(2, '0'); }
   setInterval(updateClock, 1000);
   updateClock();
 
-
-  // ── JSONP 呼叫 GAS（繞過 CORS）──
+  // ── JSONP 呼叫 GAS ──
   function callGAS(params, onSuccess, onError) {
     var cbName = 'cb_' + Date.now();
     var script = document.createElement('script');
-
     params.callback = cbName;
     script.src = GAS_URL + '?' + new URLSearchParams(params).toString();
 
@@ -206,13 +171,11 @@
       if (script.parentNode) document.body.removeChild(script);
       onSuccess(data);
     };
-
     script.onerror = function() {
       delete window[cbName];
       if (script.parentNode) document.body.removeChild(script);
-      onError('JSONP 請求失敗');
+      onError('請求失敗');
     };
-
     setTimeout(function() {
       if (window[cbName]) {
         delete window[cbName];
@@ -220,26 +183,18 @@
         onError('請求逾時');
       }
     }, 15000);
-
     document.body.appendChild(script);
   }
 
   // ── LIFF 初始化 ──
   async function init() {
     try {
-      // GET 請求避免 CORS 問題
       document.getElementById('empName').textContent = '初始化中...';
       await liff.init({ liffId: LIFF_ID });
-
-      if (!liff.isLoggedIn()) {
-        liff.login();
-        return;
-      }
-
+      if (!liff.isLoggedIn()) { liff.login(); return; }
       userProfile = await liff.getProfile();
       document.getElementById('empName').textContent = userProfile.displayName;
       requestGPS();
-
     } catch (err) {
       document.getElementById('empName').textContent = '錯誤:' + err.message;
     }
@@ -265,17 +220,15 @@
   }
 
   // ── 打卡 ──
-  async function punch(type) {
+  function punch(type) {
     if (!gpsCoords || !userProfile) {
-      showResult('GPS 或身份未就緒
-請稍後再試', 'err');
+      showResult('GPS 或身份未就緒\n請稍後再試', 'err');
       return;
     }
     setButtons(false);
     document.getElementById('spinner').textContent = '打卡中，請稍候...';
     document.getElementById('resultBox').style.display = 'none';
 
-    // JSONP 呼叫 GAS（完全繞過 CORS）
     callGAS({
       action:    'punch',
       uid:       userProfile.userId,
@@ -283,7 +236,8 @@
       lng:       gpsCoords.lng,
       punchType: type,
       timestamp: new Date().toISOString(),
-    }, function(result) {
+    },
+    function(result) {
       document.getElementById('spinner').textContent = '';
       setButtons(true);
       if (result.success) {
@@ -292,11 +246,11 @@
       } else {
         showResult(result.message, 'err');
       }
-    }, function(err) {
+    },
+    function(errMsg) {
       document.getElementById('spinner').textContent = '';
       setButtons(true);
-      showResult('連線失敗
-' + err, 'err');
+      showResult('連線失敗\n' + errMsg, 'err');
     });
   }
 
