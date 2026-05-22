@@ -208,8 +208,8 @@
       requestGPS();
 
     } catch (err) {
-  showResult('連線失敗\n錯誤：' + err.name + '\n' + err.message, 'err');
-}
+      document.getElementById('empName').textContent = '錯誤:' + err.message;
+    }
   }
 
   // ── GPS 定位 ──
@@ -262,7 +262,7 @@
         showResult(result.message, 'err');
       }
     } catch (err) {
-      showResult('連線失敗，請重試\n' + err.message, 'err');
+      showResult('連線失敗\n錯誤：' + err.name + '\n' + err.message, 'err');
     } finally {
       document.getElementById('spinner').textContent = '';
       setButtons(true);
