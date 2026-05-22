@@ -174,7 +174,7 @@
 <script>
   // ══ 設定區（GitHub Pages 版本，直接寫死）══
   var LIFF_ID = '2010157532-PcIa0Q66'; // LIFF ID
-  var GAS_URL = 'https://script.google.com/macros/s/AKfycbw8s331q6BWMHpObbLTOriJqYAEEeIngIrBq28uFLxCuBHs-ssWR7hjzAryyk6uZiaG/exec';
+  var GAS_URL = 'https://script.google.com/macros/s/AKfycbiSxQimzBwKXRpluknx-IIbvr-ufkRlXgQcrs1ywmYtiUvZxgeDR-wp-lYRdtUcqpE/exec';
 
   var userProfile = null;
   var gpsCoords   = null;
@@ -191,6 +191,38 @@
   function pad(n) { return String(n).padStart(2,'0'); }
   setInterval(updateClock, 1000);
   updateClock();
+
+
+  // ── JSONP 呼叫 GAS（繞過 CORS）──
+  function callGAS(params, onSuccess, onError) {
+    var cbName = 'cb_' + Date.now();
+    var script = document.createElement('script');
+
+    params.callback = cbName;
+    script.src = GAS_URL + '?' + new URLSearchParams(params).toString();
+
+    window[cbName] = function(data) {
+      delete window[cbName];
+      if (script.parentNode) document.body.removeChild(script);
+      onSuccess(data);
+    };
+
+    script.onerror = function() {
+      delete window[cbName];
+      if (script.parentNode) document.body.removeChild(script);
+      onError('JSONP 請求失敗');
+    };
+
+    setTimeout(function() {
+      if (window[cbName]) {
+        delete window[cbName];
+        if (script.parentNode) document.body.removeChild(script);
+        onError('請求逾時');
+      }
+    }, 15000);
+
+    document.body.appendChild(script);
+  }
 
   // ── LIFF 初始化 ──
   async function init() {
@@ -235,41 +267,37 @@
   // ── 打卡 ──
   async function punch(type) {
     if (!gpsCoords || !userProfile) {
-      showResult('GPS 或身份未就緒\n請稍後再試', 'err');
+      showResult('GPS 或身份未就緒
+請稍後再試', 'err');
       return;
     }
     setButtons(false);
     document.getElementById('spinner').textContent = '打卡中，請稍候...';
     document.getElementById('resultBox').style.display = 'none';
 
-    try {
-      // GET 請求避免 CORS 問題
-      // GET 請求，避免跨網域 CORS 問題
-      var params = new URLSearchParams({
-        action:    'punch',
-        uid:       userProfile.userId,
-        lat:       gpsCoords.lat,
-        lng:       gpsCoords.lng,
-        punchType: type,
-        timestamp: new Date().toISOString(),
-      });
-      var resp = await fetch(GAS_URL + '?' + params.toString(), {
-        method:   'GET',
-        redirect: 'follow',
-      });
-      var result = await resp.json();
+    // JSONP 呼叫 GAS（完全繞過 CORS）
+    callGAS({
+      action:    'punch',
+      uid:       userProfile.userId,
+      lat:       gpsCoords.lat,
+      lng:       gpsCoords.lng,
+      punchType: type,
+      timestamp: new Date().toISOString(),
+    }, function(result) {
+      document.getElementById('spinner').textContent = '';
+      setButtons(true);
       if (result.success) {
         var cls = result.status === '正常' ? 'ok' : result.status === '範圍外' ? 'err' : 'warn';
         showResult(result.message, cls);
       } else {
         showResult(result.message, 'err');
       }
-    } catch (err) {
-      showResult('連線失敗\n錯誤：' + err.name + '\n' + err.message, 'err');
-    } finally {
+    }, function(err) {
       document.getElementById('spinner').textContent = '';
       setButtons(true);
-    }
+      showResult('連線失敗
+' + err, 'err');
+    });
   }
 
   function showResult(msg, type) {
